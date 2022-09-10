@@ -1,0 +1,19 @@
+# Compiled Java class files
+*.class
+
+# Package files
+*.jar
+
+# JetBrains IDE
+.idea/
+build/
+.gradle/
+gradlew
+gradle/
+
+# Unit test reports
+TEST*.xml
+
+*.bat
+*.log
+/src/main/resources/application.properties
