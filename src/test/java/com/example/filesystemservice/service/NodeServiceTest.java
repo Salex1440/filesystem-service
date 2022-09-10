@@ -1,15 +1,14 @@
 package com.example.filesystemservice.service;
 
 import com.example.filesystemservice.dto.BatchDto;
+import com.example.filesystemservice.dto.ItemDto;
 import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -28,6 +28,9 @@ class NodeServiceTest {
     @InjectMocks
     NodeService nodeService;
 
+    @Captor
+    private ArgumentCaptor<Node> nodeCaptor;
+
     AutoCloseable closeable;
 
     @Test
@@ -35,7 +38,18 @@ class NodeServiceTest {
         String filename = "json/batch.json";
         BatchDto batch = createBatchData(filename);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
+
         nodeService.importNode(batch);
+        verify(nodeRepositoryMock).save(nodeCaptor.capture());
+
+        ItemDto item = batch.getItems().get(0);
+        String updateDate = batch.getUpdateDate();
+        assertEquals(item.getId(), nodeCaptor.getValue().getId());
+        assertEquals(item.getType(), nodeCaptor.getValue().getType());
+        assertEquals(item.getUrl(), nodeCaptor.getValue().getUrl());
+        assertEquals(updateDate, nodeCaptor.getValue().getDate());
+        assertEquals(item.getSize(), nodeCaptor.getValue().getSize());
+        assertEquals(item.getParentId(), nodeCaptor.getValue().getParentId());
         verify(nodeRepositoryMock, times(1)).save(any(Node.class));
     }
 
