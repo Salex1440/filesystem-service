@@ -36,7 +36,7 @@ public class NodeService {
             }
             if (item.getType().equals(NodeType.FOLDER.toString())) {
                 if (item.getUrl() != null) {
-                    throw new UnprocessableEntityException("For a node of type \"FOLDER\" URL must be NULL!");
+                    throw new BadRequestException("For a node of type \"FOLDER\" URL must be NULL!");
                 }
                 if (item.getSize() != 0) {
                     throw new BadRequestException("FOLDER size must be NULL!");

@@ -108,6 +108,36 @@ class NodeServiceTest {
     }
 
     @Test
+    void badFolderSize() {
+        String file = "json/BadFolderSize.json";
+        BatchDto batchFile = createBatchData(file);
+        doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
+        assertThrows(BadRequestException.class,
+                () -> nodeService.importNode(batchFile),
+                "Expected save() to throw a BadRequestException, but it didn't");
+    }
+
+    @Test
+    void badFileUrl() {
+        String file = "json/BadFileUrl.json";
+        BatchDto batchFile = createBatchData(file);
+        doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
+        assertThrows(BadRequestException.class,
+                () -> nodeService.importNode(batchFile),
+                "Expected save() to throw a BadRequestException, but it didn't");
+    }
+
+    @Test
+    void badFolderUrl() {
+        String file = "json/BadFolderUrl.json";
+        BatchDto batchFile = createBatchData(file);
+        doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
+        assertThrows(BadRequestException.class,
+                () -> nodeService.importNode(batchFile),
+                "Expected save() to throw a BadRequestException, but it didn't");
+    }
+
+    @Test
     void sameId() {
         String file = "json/SameId.json";
         BatchDto batchFile = createBatchData(file);
