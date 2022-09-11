@@ -19,10 +19,10 @@ public class NodeService {
         for (ItemDto item : batch.getItems()) {
             Node node = nodeRepository.findNodeById(item.getId());
             Node newParentNode = nodeRepository.findNodeById(item.getParentId());
-            if (newParentNode.getType().equals(NodeType.FILE.toString())) {
+            if (newParentNode != null && newParentNode.getType().equals(NodeType.FILE.toString())) {
                 throw new UnprocessableEntityException("Item of type \"FILE\" can't be parent!");
             }
-            if (!node.getType().equals(item.getType())) {
+            if (node != null && !node.getType().equals(item.getType())) {
                 throw new UnprocessableEntityException("Can't change type of an item!");
             }
             if (item.getType().equals(NodeType.FOLDER.toString())) {
@@ -41,20 +41,15 @@ public class NodeService {
                 }
             }
             if (node == null) {
+                node = new Node();
                 node.setId(item.getId());
                 node.setType(item.getType());
-                node.setUrl(item.getUrl());
-                node.setDate(updateDate);
-                node.setSize(item.getSize());
-                node.setParentId(item.getParentId());
-                nodeRepository.save(node);
-            } else {
-                node.setUrl(item.getUrl());
-                node.setDate(updateDate);
-                node.setSize(item.getSize());
-                node.setParentId(item.getParentId());
-                nodeRepository.save(node);
             }
+            node.setUrl(item.getUrl());
+            node.setDate(updateDate);
+            node.setSize(item.getSize());
+            node.setParentId(item.getParentId());
+            nodeRepository.save(node);
         }
     }
 
