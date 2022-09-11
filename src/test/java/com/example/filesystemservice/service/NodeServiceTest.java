@@ -92,7 +92,7 @@ class NodeServiceTest {
         BatchDto batchFile2 = createBatchData(file2);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         doReturn(node).when(nodeRepositoryMock).findNodeById(batchFile2.getItems().get(0).getParentId());
-        assertThrows(UnprocessableEntityException.class,
+        assertThrows(BadRequestException.class,
                 () -> nodeService.importNode(batchFile2),
                 "Expected save() to throw a UnprocessableEntityException, but it didn't");
     }

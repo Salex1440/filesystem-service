@@ -29,32 +29,32 @@ public class NodeService {
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(updateDate);
             if (!matcher.matches()) {
-                throw new BadRequestException("Bad date format!");
+                throw new BadRequestException("Validation Failed");
             }
             if (ids.contains(item.getId())) {
-                throw new BadRequestException("There are two or more same ids in the request!");
+                throw new BadRequestException("Validation Failed");
             } else {
                 ids.add(item.getId());
             }
             if (newParentNode != null && newParentNode.getType().equals(NodeType.FILE.toString())) {
-                throw new UnprocessableEntityException("Item of type \"FILE\" can't be parent!");
+                throw new BadRequestException("Validation Failed");
             }
             if (node != null && !node.getType().equals(item.getType())) {
-                throw new UnprocessableEntityException("Can't change type of an item!");
+                throw new BadRequestException("Validation Failed");
             }
             if (item.getType().equals(NodeType.FOLDER.toString())) {
                 if (item.getUrl() != null) {
-                    throw new BadRequestException("For a node of type \"FOLDER\" URL must be NULL!");
+                    throw new BadRequestException("Validation Failed");
                 }
                 if (item.getSize() != 0) {
-                    throw new BadRequestException("FOLDER size must be NULL!");
+                    throw new BadRequestException("Validation Failed");
                 }
             } else if (item.getType().equals((NodeType.FILE).toString())) {
                 if (item.getUrl().length() > 255) {
-                    throw new BadRequestException("URL size must be less or equal than 255!");
+                    throw new BadRequestException("Validation Failed");
                 }
                 if (item.getSize() == 0) {
-                    throw new BadRequestException("FILE size must be not NULL!");
+                    throw new BadRequestException("Validation Failed");
                 }
             }
             if (node == null) {
