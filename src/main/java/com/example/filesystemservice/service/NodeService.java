@@ -20,6 +20,9 @@ public class NodeService {
         for (ItemDto item : batch.getItems()) {
             Node node = nodeRepository.findNodeById(item.getId());
             if (node == null) {
+                if (item.getType().equals(NodeType.FOLDER)){
+
+                }
                 node.setId(item.getId());
                 node.setType(item.getType());
                 node.setUrl(item.getUrl());
@@ -29,7 +32,7 @@ public class NodeService {
                 nodeRepository.save(node);
             } else {
                 Node newParentNode = nodeRepository.findNodeById(item.getParentId());
-                if (newParentNode.getType().equals("FILE")) {
+                if (newParentNode.getType().equals(NodeType.FILE)) {
                     throw new UnprocessableEntityException("Item of type \"FILE\" can't be parent!");
                 }
                 if (!node.getType().equals(item.getType())) {
