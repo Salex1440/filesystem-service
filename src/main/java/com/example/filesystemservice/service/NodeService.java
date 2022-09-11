@@ -7,8 +7,6 @@ import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 
 public class NodeService {
 
@@ -20,7 +18,7 @@ public class NodeService {
         for (ItemDto item : batch.getItems()) {
             Node node = nodeRepository.findNodeById(item.getId());
             if (node == null) {
-                if (item.getType().equals(NodeType.FOLDER) && item.getUrl() != null){
+                if (item.getType().equals(NodeType.FOLDER.toString()) && item.getUrl() != null) {
                     throw new UnprocessableEntityException("For a node of type \"FOLDER\" URL must be NULL!");
                 }
                 node.setId(item.getId());
@@ -32,7 +30,7 @@ public class NodeService {
                 nodeRepository.save(node);
             } else {
                 Node newParentNode = nodeRepository.findNodeById(item.getParentId());
-                if (newParentNode.getType().equals(NodeType.FILE)) {
+                if (newParentNode.getType().equals(NodeType.FILE.toString())) {
                     throw new UnprocessableEntityException("Item of type \"FILE\" can't be parent!");
                 }
                 if (!node.getType().equals(item.getType())) {
@@ -41,7 +39,6 @@ public class NodeService {
             }
         }
     }
-
 
 
 }
