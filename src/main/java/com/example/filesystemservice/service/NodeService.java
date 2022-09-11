@@ -36,8 +36,8 @@ public class NodeService {
                 if (item.getUrl().length() > 255) {
                     throw new BadRequestException("URL size must be less or equal than 255!");
                 }
-                if (item.getType().equals((NodeType.FILE).toString()) && item.getUrl().length() == 0) {
-                    throw new BadRequestException("URL size must be greater than 0!");
+                if (item.getSize() == 0) {
+                    throw new BadRequestException("FILE size must be not NULL!");
                 }
             }
             if (node == null) {
