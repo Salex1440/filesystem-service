@@ -1,0 +1,19 @@
+{
+  "items": [
+    {
+      "type": "FILE",
+      "url": "/file/url1",
+      "id": "sameId",
+      "parentId": null,
+      "size": 128
+    },
+    {
+      "type": "FILE",
+      "url": "/file/url2",
+      "id": "sameId",
+      "parentId": null,
+      "size": 128
+    }
+  ],
+  "updateDate": "2022-02-01T12:00:00Z"
+}

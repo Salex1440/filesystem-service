@@ -8,6 +8,9 @@ import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class NodeService {
 
@@ -15,10 +18,16 @@ public class NodeService {
     private NodeRepository nodeRepository;
 
     public void importNode(BatchDto batch) {
+        Set<String> ids = new HashSet<>();
         String updateDate = batch.getUpdateDate();
         for (ItemDto item : batch.getItems()) {
             Node node = nodeRepository.findNodeById(item.getId());
             Node newParentNode = nodeRepository.findNodeById(item.getParentId());
+            if (ids.contains(item.getId())) {
+                throw new BadRequestException("There are two or more same ids in the request!");
+            } else {
+                ids.add(item.getId());
+            }
             if (newParentNode != null && newParentNode.getType().equals(NodeType.FILE.toString())) {
                 throw new UnprocessableEntityException("Item of type \"FILE\" can't be parent!");
             }
