@@ -2,7 +2,7 @@ package com.example.filesystemservice.service;
 
 import com.example.filesystemservice.dto.BatchDto;
 import com.example.filesystemservice.dto.ItemDto;
-import com.example.filesystemservice.exception.BadParentException;
+import com.example.filesystemservice.exception.UnprocessableEntityException;
 import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,10 @@ public class NodeService {
             } else {
                 Node newParentNode = nodeRepository.findNodeById(item.getParentId());
                 if (newParentNode.getType().equals("FILE")) {
-                    throw new BadParentException("Item of type \"FILE\" can't be parent!");
+                    throw new UnprocessableEntityException("Item of type \"FILE\" can't be parent!");
+                }
+                if (!node.getType().equals(item.getType())) {
+                    throw new UnprocessableEntityException("Can't change type of the item!");
                 }
             }
         }

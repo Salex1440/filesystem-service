@@ -4,8 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-public class BadParentException extends RuntimeException {
+public class UnprocessableEntityException extends RuntimeException {
 
-    public BadParentException(String message) { super(message); }
+    public UnprocessableEntityException(String message) { super(message); }
 
 }
