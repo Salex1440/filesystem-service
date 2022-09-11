@@ -20,8 +20,8 @@ public class NodeService {
         for (ItemDto item : batch.getItems()) {
             Node node = nodeRepository.findNodeById(item.getId());
             if (node == null) {
-                if (item.getType().equals(NodeType.FOLDER)){
-
+                if (item.getType().equals(NodeType.FOLDER) && item.getUrl() != null){
+                    throw new UnprocessableEntityException("For a node of type \"FOLDER\" URL must be NULL!");
                 }
                 node.setId(item.getId());
                 node.setType(item.getType());
