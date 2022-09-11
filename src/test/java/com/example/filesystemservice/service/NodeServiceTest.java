@@ -3,7 +3,6 @@ package com.example.filesystemservice.service;
 import com.example.filesystemservice.dto.BatchDto;
 import com.example.filesystemservice.dto.ItemDto;
 import com.example.filesystemservice.exception.BadRequestException;
-import com.example.filesystemservice.exception.UnprocessableEntityException;
 import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
 import com.google.gson.Gson;
