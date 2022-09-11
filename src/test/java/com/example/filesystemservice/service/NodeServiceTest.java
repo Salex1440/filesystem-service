@@ -147,6 +147,16 @@ class NodeServiceTest {
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
+    @Test
+    void badDate() {
+        String file = "json/BadDate.json";
+        BatchDto batchFile = createBatchData(file);
+        doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
+        assertThrows(BadRequestException.class,
+                () -> nodeService.importNode(batchFile),
+                "Expected save() to throw a BadRequestException, but it didn't");
+    }
+
 
     @BeforeEach
     void initMocks() {

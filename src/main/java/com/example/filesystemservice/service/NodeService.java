@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class NodeService {
@@ -23,6 +25,12 @@ public class NodeService {
         for (ItemDto item : batch.getItems()) {
             Node node = nodeRepository.findNodeById(item.getId());
             Node newParentNode = nodeRepository.findNodeById(item.getParentId());
+            String regex = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(updateDate);
+            if (!matcher.matches()) {
+                throw new BadRequestException("Bad date format!");
+            }
             if (ids.contains(item.getId())) {
                 throw new BadRequestException("There are two or more same ids in the request!");
             } else {
