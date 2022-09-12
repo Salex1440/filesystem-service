@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -205,6 +207,33 @@ class NodeServiceTest {
         assertEquals(nodeDto.getSize(), node.getSize());
         assertEquals(nodeDto.getChildren(), new ArrayList<>());
         assertEquals(nodeDto.getUpdateDate(), node.getDate());
+    }
+
+    @Test
+    void checkFolderSize() {
+        String filename = "json/FolderSize.json";
+        BatchDto batch = createBatchData(filename);
+        List<Node> nodes = new ArrayList<>();
+        for (ItemDto item : batch.getItems()) {
+            Node node = new Node();
+            node.setId(item.getId());
+            node.setType(item.getType());
+            node.setUrl(item.getUrl());
+            node.setDate(batch.getUpdateDate());
+            node.setSize(item.getSize());
+            node.setParentId(item.getParentId());
+            nodes.add(node);
+            doReturn(node).when(nodeRepositoryMock).findNodeById(node.getId());
+        }
+        List<Node> children1 = Arrays.asList(nodes.get(1), nodes.get(2));
+        doReturn(children1).when(nodeRepositoryMock).findNodesByParentId(nodes.get(0).getId());
+        List<Node> children2 = Arrays.asList(nodes.get(3), nodes.get(4));
+        doReturn(children2).when(nodeRepositoryMock).findNodesByParentId(nodes.get(1).getId());
+
+        NodeDto result = nodeService.getNodeById("folderId1");
+        assertEquals(result.getSize(), nodes.get(2).getSize() + nodes.get(3).getSize() + nodes.get(4).getSize());
+        result = nodeService.getNodeById("folderId2");
+        assertEquals(result.getSize(), nodes.get(3).getSize() + nodes.get(4).getSize());
     }
 
     @BeforeEach

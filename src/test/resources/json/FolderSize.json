@@ -1,0 +1,36 @@
+{
+  "items": [
+    {
+      "type": "FOLDER",
+      "id": "folderId1",
+      "parentId": null
+    },
+    {
+      "type": "FOLDER",
+      "id": "folderId2",
+      "parentId": "folderId1"
+    },
+    {
+      "type": "FILE",
+      "url": "/file/url1",
+      "id": "fileId1",
+      "parentId": "folderId1",
+      "size": 1
+    },
+    {
+      "type": "FILE",
+      "url": "/file/url2",
+      "id": "fileId2",
+      "parentId": "folderId2",
+      "size": 1
+    },
+    {
+      "type": "FILE",
+      "url": "/file/url3",
+      "id": "fileId3",
+      "parentId": "folderId2",
+      "size": 1
+    }
+  ],
+  "updateDate": "2022-02-01T12:00:00Z"
+}

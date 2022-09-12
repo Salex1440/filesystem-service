@@ -85,13 +85,16 @@ public class NodeService {
         nodeDto.setParentId(node.getParentId());
         if (node.getType().equals(NodeType.FOLDER.toString())) {
             List<NodeDto> childrenDto = new ArrayList<>();
+            int size = 0;
             if (children != null) {
                 for (Node child : children) {
                     NodeDto childDto = getNodeById(child.getId());
                     childrenDto.add(childDto);
+                    size += childDto.getSize();
                 }
             }
             nodeDto.setChildren(childrenDto);
+            nodeDto.setSize(size);
         } else if (node.getType().equals(NodeType.FILE.toString())) {
             nodeDto.setChildren(null);
         }
