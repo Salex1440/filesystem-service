@@ -74,6 +74,18 @@ public class NodeService {
             node.setSize(item.getSize());
             node.setParentId(item.getParentId());
             nodeRepository.save(node);
+            if (newParentNode != null) {
+                updateDate(newParentNode, updateDate);
+            }
+        }
+    }
+
+    private void updateDate(Node node, String date) {
+        node.setDate(date);
+        nodeRepository.save(node);
+        Node parentNode = nodeRepository.findNodeById(node.getParentId());
+        if (parentNode != null) {
+            updateDate(parentNode, date);
         }
     }
 
