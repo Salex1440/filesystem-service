@@ -9,12 +9,8 @@ import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,7 +18,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+@Service
 public class NodeService {
 
     @Autowired
@@ -90,7 +86,7 @@ public class NodeService {
         NodeDto nodeDto = new NodeDto();
         nodeDto.setId(node.getId());
         nodeDto.setType(node.getType());
-        nodeDto.setUpdateDate(node.getDate());
+        nodeDto.setDate(node.getDate());
         nodeDto.setSize(node.getSize());
         nodeDto.setUrl(node.getUrl());
         nodeDto.setParentId(node.getParentId());

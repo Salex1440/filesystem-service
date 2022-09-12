@@ -26,7 +26,7 @@ public class MainController {
         return "";
     }
 
-    @GetMapping(path = "nodes")
+    @GetMapping(path = "nodes/{id}")
     @ResponseBody
     public NodeDto nodes(@PathVariable String id) {
         return nodeService.getNodeById(id);

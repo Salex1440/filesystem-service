@@ -183,7 +183,7 @@ class NodeServiceTest {
         assertEquals(nodeDto.getParentId(), node.getParentId());
         assertEquals(nodeDto.getSize(), node.getSize());
         assertNull(nodeDto.getChildren());
-        assertEquals(nodeDto.getUpdateDate(), node.getDate());
+        assertEquals(nodeDto.getDate(), node.getDate());
     }
 
     @Test
@@ -208,7 +208,7 @@ class NodeServiceTest {
         assertEquals(nodeDto.getParentId(), node.getParentId());
         assertEquals(nodeDto.getSize(), node.getSize());
         assertEquals(nodeDto.getChildren(), new ArrayList<>());
-        assertEquals(nodeDto.getUpdateDate(), node.getDate());
+        assertEquals(nodeDto.getDate(), node.getDate());
     }
 
     @Test
