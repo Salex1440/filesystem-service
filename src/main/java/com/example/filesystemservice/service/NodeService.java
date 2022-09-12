@@ -104,4 +104,18 @@ public class NodeService {
         return nodeDto;
     }
 
+    public void deleteNodeById(String id) {
+        Node node = nodeRepository.findNodeById(id);
+        if (node == null) {
+            throw new NotFoundException("Item not found");
+        }
+        List<Node> children = nodeRepository.findNodesByParentId(id);
+        nodeRepository.delete(node);
+        if (children != null) {
+            for (Node child : children) {
+                deleteNodeById(child.getId());
+            }
+        }
+    }
+
 }

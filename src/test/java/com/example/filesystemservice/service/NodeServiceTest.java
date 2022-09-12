@@ -244,6 +244,44 @@ class NodeServiceTest {
                 "Expected getNodeById() to throw a NotFoundException, but it didn't");
     }
 
+    @Test
+    void deleteNodeById() {
+        String filename = "json/FolderSize.json";
+        BatchDto batch = createBatchData(filename);
+        List<Node> nodes = new ArrayList<>();
+        for (ItemDto item : batch.getItems()) {
+            Node node = new Node();
+            node.setId(item.getId());
+            node.setType(item.getType());
+            node.setUrl(item.getUrl());
+            node.setDate(batch.getUpdateDate());
+            node.setSize(item.getSize());
+            node.setParentId(item.getParentId());
+            nodes.add(node);
+            doReturn(node).when(nodeRepositoryMock).findNodeById(node.getId());
+        }
+        List<Node> children1 = Arrays.asList(nodes.get(1), nodes.get(2));
+        doReturn(children1).when(nodeRepositoryMock).findNodesByParentId(nodes.get(0).getId());
+        List<Node> children2 = Arrays.asList(nodes.get(3), nodes.get(4));
+        doReturn(children2).when(nodeRepositoryMock).findNodesByParentId(nodes.get(1).getId());
+
+        nodeService.deleteNodeById("fileId3");
+        children2 = List.of(nodes.get(3));
+        doReturn(children2).when(nodeRepositoryMock).findNodesByParentId(nodes.get(1).getId());
+        nodeService.deleteNodeById("folderId2");
+        children1 = List.of(nodes.get(2));
+        doReturn(children1).when(nodeRepositoryMock).findNodesByParentId(nodes.get(0).getId());
+        nodeService.deleteNodeById("folderId1");
+    }
+
+    @Test
+    void deleteNodeNotFound() {
+        assertThrows(NotFoundException.class,
+                () -> nodeService.deleteNodeById("notExistingId"),
+                "Expected getNodeById() to throw a NotFoundException, but it didn't");
+    }
+
+
     @BeforeEach
     void initMocks() {
         closeable = MockitoAnnotations.openMocks(this);
