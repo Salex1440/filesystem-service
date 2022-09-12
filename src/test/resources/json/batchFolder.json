@@ -1,0 +1,10 @@
+{
+  "items": [
+    {
+      "type": "FOLDER",
+      "id": "folderId1",
+      "parentId": null
+    }
+  ],
+  "updateDate": "2022-02-01T12:00:00Z"
+}
