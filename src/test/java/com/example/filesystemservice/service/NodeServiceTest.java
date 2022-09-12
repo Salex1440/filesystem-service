@@ -2,6 +2,7 @@ package com.example.filesystemservice.service;
 
 import com.example.filesystemservice.dto.BatchDto;
 import com.example.filesystemservice.dto.ItemDto;
+import com.example.filesystemservice.dto.NodeDto;
 import com.example.filesystemservice.exception.BadRequestException;
 import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
@@ -16,9 +17,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -156,6 +157,55 @@ class NodeServiceTest {
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
+    @Test
+    void getFileNodeById() {
+        String filename = "json/batchFile.json";
+        BatchDto batch = createBatchData(filename);
+        ItemDto item = batch.getItems().get(0);
+        Node node = new Node();
+        node.setId(item.getId());
+        node.setType(item.getType());
+        node.setUrl(item.getUrl());
+        node.setDate(batch.getUpdateDate());
+        node.setSize(item.getSize());
+        node.setParentId(item.getParentId());
+        doReturn(node).when(nodeRepositoryMock).findNodeById(node.getId());
+        doReturn(null).when(nodeRepositoryMock).findNodesByParentId(anyString());
+
+        NodeDto nodeDto = nodeService.getNodeById(node.getId());
+        assertEquals(nodeDto.getId(), node.getId());
+        assertEquals(nodeDto.getType(), node.getType());
+        assertEquals(nodeDto.getUrl(), node.getUrl());
+        assertEquals(nodeDto.getParentId(), node.getParentId());
+        assertEquals(nodeDto.getSize(), node.getSize());
+        assertNull(nodeDto.getChildren());
+        assertEquals(nodeDto.getUpdateDate(), node.getDate());
+    }
+
+    @Test
+    void getFolderNodeById() {
+        String filename = "json/batchFolder.json";
+        BatchDto batch = createBatchData(filename);
+        ItemDto item = batch.getItems().get(0);
+        Node node = new Node();
+        node.setId(item.getId());
+        node.setType(item.getType());
+        node.setUrl(item.getUrl());
+        node.setDate(batch.getUpdateDate());
+        node.setSize(item.getSize());
+        node.setParentId(item.getParentId());
+        doReturn(node).when(nodeRepositoryMock).findNodeById(node.getId());
+        doReturn(null).when(nodeRepositoryMock).findNodesByParentId(anyString());
+
+        NodeDto nodeDto = nodeService.getNodeById(node.getId());
+        assertEquals(nodeDto.getId(), node.getId());
+        assertEquals(nodeDto.getType(), node.getType());
+        assertEquals(nodeDto.getUrl(), node.getUrl());
+        assertEquals(nodeDto.getParentId(), node.getParentId());
+        assertEquals(nodeDto.getSize(), node.getSize());
+        assertEquals(nodeDto.getChildren(), new ArrayList<>());
+        assertEquals(nodeDto.getUpdateDate(), node.getDate());
+    }
 
     @BeforeEach
     void initMocks() {

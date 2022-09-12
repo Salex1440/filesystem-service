@@ -2,13 +2,16 @@ package com.example.filesystemservice.service;
 
 import com.example.filesystemservice.dto.BatchDto;
 import com.example.filesystemservice.dto.ItemDto;
+import com.example.filesystemservice.dto.NodeDto;
 import com.example.filesystemservice.exception.BadRequestException;
 import com.example.filesystemservice.exception.UnprocessableEntityException;
 import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,5 +73,29 @@ public class NodeService {
         }
     }
 
+    public NodeDto getNodeById(String id) {
+        Node node = nodeRepository.findNodeById(id);
+        List<Node> children = nodeRepository.findNodesByParentId(id);
+        NodeDto nodeDto = new NodeDto();
+        nodeDto.setId(node.getId());
+        nodeDto.setType(node.getType());
+        nodeDto.setUpdateDate(node.getDate());
+        nodeDto.setSize(node.getSize());
+        nodeDto.setUrl(node.getUrl());
+        nodeDto.setParentId(node.getParentId());
+        if (node.getType().equals(NodeType.FOLDER.toString())) {
+            List<NodeDto> childrenDto = new ArrayList<>();
+            if (children != null) {
+                for (Node child : children) {
+                    NodeDto childDto = getNodeById(child.getId());
+                    childrenDto.add(childDto);
+                }
+            }
+            nodeDto.setChildren(childrenDto);
+        } else if (node.getType().equals(NodeType.FILE.toString())) {
+            nodeDto.setChildren(null);
+        }
+        return nodeDto;
+    }
 
 }

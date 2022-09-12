@@ -25,6 +25,4 @@ public class Node {
 
     private String date;
 
-    private List<Node> children;
-
 }
