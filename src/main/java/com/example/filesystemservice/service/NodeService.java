@@ -7,7 +7,9 @@ import com.example.filesystemservice.exception.BadRequestException;
 import com.example.filesystemservice.exception.NotFoundException;
 import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,16 +18,18 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
+@Service
 public class NodeService {
 
     @Autowired
     private NodeRepository nodeRepository;
 
-    public void importBatch(BatchDto batch) {
+    public void importBatch(String batch) {
+        Gson gson = new Gson();
+        BatchDto batchDto = gson.fromJson(batch, BatchDto.class);
         Set<String> ids = new HashSet<>();
-        String updateDate = batch.getUpdateDate();
-        for (ItemDto item : batch.getItems()) {
+        String updateDate = batchDto.getUpdateDate();
+        for (ItemDto item : batchDto.getItems()) {
             Node node = nodeRepository.findNodeById(item.getId());
             Node newParentNode = nodeRepository.findNodeById(item.getParentId());
             String regex = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$";
@@ -70,6 +74,18 @@ public class NodeService {
             node.setSize(item.getSize());
             node.setParentId(item.getParentId());
             nodeRepository.save(node);
+            if (newParentNode != null) {
+                updateDate(newParentNode, updateDate);
+            }
+        }
+    }
+
+    private void updateDate(Node node, String date) {
+        node.setDate(date);
+        nodeRepository.save(node);
+        Node parentNode = nodeRepository.findNodeById(node.getParentId());
+        if (parentNode != null) {
+            updateDate(parentNode, date);
         }
     }
 
@@ -82,7 +98,7 @@ public class NodeService {
         NodeDto nodeDto = new NodeDto();
         nodeDto.setId(node.getId());
         nodeDto.setType(node.getType());
-        nodeDto.setUpdateDate(node.getDate());
+        nodeDto.setDate(node.getDate());
         nodeDto.setSize(node.getSize());
         nodeDto.setUrl(node.getUrl());
         nodeDto.setParentId(node.getParentId());

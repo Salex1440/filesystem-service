@@ -44,8 +44,8 @@ class NodeServiceTest {
         String filename = "json/batchFolder.json";
         BatchDto batch = createBatchData(filename);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
-
-        nodeService.importBatch(batch);
+        String json = createJsonData(filename);
+        nodeService.importBatch(json);
         verify(nodeRepositoryMock).save(nodeCaptor.capture());
 
         ItemDto item = batch.getItems().get(0);
@@ -64,8 +64,8 @@ class NodeServiceTest {
         String filename = "json/batchFile.json";
         BatchDto batch = createBatchData(filename);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
-
-        nodeService.importBatch(batch);
+        String json = createJsonData(filename);
+        nodeService.importBatch(json);
         verify(nodeRepositoryMock).save(nodeCaptor.capture());
 
         ItemDto item = batch.getItems().get(0);
@@ -93,70 +93,71 @@ class NodeServiceTest {
         node.setSize(item.getSize());
         node.setParentId(item.getParentId());
         BatchDto batchFile2 = createBatchData(file2);
+        String json = createJsonData(file2);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         doReturn(node).when(nodeRepositoryMock).findNodeById(batchFile2.getItems().get(0).getParentId());
         assertThrows(BadRequestException.class,
-                () -> nodeService.importBatch(batchFile2),
+                () -> nodeService.importBatch(json),
                 "Expected save() to throw a UnprocessableEntityException, but it didn't");
     }
 
     @Test
     void badFileSize() {
         String file = "json/BadFileSize.json";
-        BatchDto batchFile = createBatchData(file);
+        String json = createJsonData(file);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         assertThrows(BadRequestException.class,
-                () -> nodeService.importBatch(batchFile),
+                () -> nodeService.importBatch(json),
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
     @Test
     void badFolderSize() {
         String file = "json/BadFolderSize.json";
-        BatchDto batchFile = createBatchData(file);
+        String json = createJsonData(file);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         assertThrows(BadRequestException.class,
-                () -> nodeService.importBatch(batchFile),
+                () -> nodeService.importBatch(json),
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
     @Test
     void badFileUrl() {
         String file = "json/BadFileUrl.json";
-        BatchDto batchFile = createBatchData(file);
+        String json = createJsonData(file);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         assertThrows(BadRequestException.class,
-                () -> nodeService.importBatch(batchFile),
+                () -> nodeService.importBatch(json),
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
     @Test
     void badFolderUrl() {
         String file = "json/BadFolderUrl.json";
-        BatchDto batchFile = createBatchData(file);
+        String json = createJsonData(file);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         assertThrows(BadRequestException.class,
-                () -> nodeService.importBatch(batchFile),
+                () -> nodeService.importBatch(json),
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
     @Test
     void sameId() {
         String file = "json/SameId.json";
-        BatchDto batchFile = createBatchData(file);
+        String json = createJsonData(file);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         assertThrows(BadRequestException.class,
-                () -> nodeService.importBatch(batchFile),
+                () -> nodeService.importBatch(json),
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
     @Test
     void badDate() {
         String file = "json/BadDate.json";
-        BatchDto batchFile = createBatchData(file);
+        String json = createJsonData(file);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         assertThrows(BadRequestException.class,
-                () -> nodeService.importBatch(batchFile),
+                () -> nodeService.importBatch(json),
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
@@ -182,7 +183,7 @@ class NodeServiceTest {
         assertEquals(nodeDto.getParentId(), node.getParentId());
         assertEquals(nodeDto.getSize(), node.getSize());
         assertNull(nodeDto.getChildren());
-        assertEquals(nodeDto.getUpdateDate(), node.getDate());
+        assertEquals(nodeDto.getDate(), node.getDate());
     }
 
     @Test
@@ -207,7 +208,7 @@ class NodeServiceTest {
         assertEquals(nodeDto.getParentId(), node.getParentId());
         assertEquals(nodeDto.getSize(), node.getSize());
         assertEquals(nodeDto.getChildren(), new ArrayList<>());
-        assertEquals(nodeDto.getUpdateDate(), node.getDate());
+        assertEquals(nodeDto.getDate(), node.getDate());
     }
 
     @Test
@@ -310,6 +311,25 @@ class NodeServiceTest {
         }
         Gson gson = new Gson();
         return gson.fromJson(content, BatchDto.class);
+    }
+
+    private String createJsonData(String filename) {
+        ClassLoader classLoader = getClass().getClassLoader();
+        String content = "";
+        try (InputStream inputStream = classLoader.getResourceAsStream(filename)) {
+            assert inputStream != null;
+            InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+            BufferedReader reader = new BufferedReader(streamReader);
+            StringBuilder json = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                json.append(line);
+            }
+            content = json.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content;
     }
 
 }

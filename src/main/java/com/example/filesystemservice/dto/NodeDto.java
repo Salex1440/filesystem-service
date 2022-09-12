@@ -21,6 +21,6 @@ public class NodeDto {
 
     private List<NodeDto> children;
 
-    private String updateDate;
+    private String date;
 
 }
