@@ -19,7 +19,7 @@ public class MainController {
         return "";
     }
 
-    @DeleteMapping(path = "delete")
+    @DeleteMapping(path = "delete/{id}")
     @ResponseBody
     public String delete(@PathVariable String id) {
         nodeService.deleteNodeById(id);
