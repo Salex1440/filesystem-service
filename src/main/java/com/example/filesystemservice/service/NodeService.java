@@ -19,7 +19,7 @@ public class NodeService {
     @Autowired
     private NodeRepository nodeRepository;
 
-    public void importNode(BatchDto batch) {
+    public void importBatch(BatchDto batch) {
         Set<String> ids = new HashSet<>();
         String updateDate = batch.getUpdateDate();
         for (ItemDto item : batch.getItems()) {

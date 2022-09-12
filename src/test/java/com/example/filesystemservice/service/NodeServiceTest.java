@@ -41,7 +41,7 @@ class NodeServiceTest {
         BatchDto batch = createBatchData(filename);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
 
-        nodeService.importNode(batch);
+        nodeService.importBatch(batch);
         verify(nodeRepositoryMock).save(nodeCaptor.capture());
 
         ItemDto item = batch.getItems().get(0);
@@ -61,7 +61,7 @@ class NodeServiceTest {
         BatchDto batch = createBatchData(filename);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
 
-        nodeService.importNode(batch);
+        nodeService.importBatch(batch);
         verify(nodeRepositoryMock).save(nodeCaptor.capture());
 
         ItemDto item = batch.getItems().get(0);
@@ -92,7 +92,7 @@ class NodeServiceTest {
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         doReturn(node).when(nodeRepositoryMock).findNodeById(batchFile2.getItems().get(0).getParentId());
         assertThrows(BadRequestException.class,
-                () -> nodeService.importNode(batchFile2),
+                () -> nodeService.importBatch(batchFile2),
                 "Expected save() to throw a UnprocessableEntityException, but it didn't");
     }
 
@@ -102,7 +102,7 @@ class NodeServiceTest {
         BatchDto batchFile = createBatchData(file);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         assertThrows(BadRequestException.class,
-                () -> nodeService.importNode(batchFile),
+                () -> nodeService.importBatch(batchFile),
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
@@ -112,7 +112,7 @@ class NodeServiceTest {
         BatchDto batchFile = createBatchData(file);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         assertThrows(BadRequestException.class,
-                () -> nodeService.importNode(batchFile),
+                () -> nodeService.importBatch(batchFile),
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
@@ -122,7 +122,7 @@ class NodeServiceTest {
         BatchDto batchFile = createBatchData(file);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         assertThrows(BadRequestException.class,
-                () -> nodeService.importNode(batchFile),
+                () -> nodeService.importBatch(batchFile),
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
@@ -132,7 +132,7 @@ class NodeServiceTest {
         BatchDto batchFile = createBatchData(file);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         assertThrows(BadRequestException.class,
-                () -> nodeService.importNode(batchFile),
+                () -> nodeService.importBatch(batchFile),
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
@@ -142,7 +142,7 @@ class NodeServiceTest {
         BatchDto batchFile = createBatchData(file);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         assertThrows(BadRequestException.class,
-                () -> nodeService.importNode(batchFile),
+                () -> nodeService.importBatch(batchFile),
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
@@ -152,7 +152,7 @@ class NodeServiceTest {
         BatchDto batchFile = createBatchData(file);
         doReturn(null).when(nodeRepositoryMock).save(any(Node.class));
         assertThrows(BadRequestException.class,
-                () -> nodeService.importNode(batchFile),
+                () -> nodeService.importBatch(batchFile),
                 "Expected save() to throw a BadRequestException, but it didn't");
     }
 
