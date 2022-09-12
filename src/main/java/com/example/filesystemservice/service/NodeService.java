@@ -7,8 +7,14 @@ import com.example.filesystemservice.exception.BadRequestException;
 import com.example.filesystemservice.exception.NotFoundException;
 import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,10 +28,12 @@ public class NodeService {
     @Autowired
     private NodeRepository nodeRepository;
 
-    public void importBatch(BatchDto batch) {
+    public void importBatch(String batch) {
+        Gson gson = new Gson();
+        BatchDto batchDto = gson.fromJson(batch, BatchDto.class);
         Set<String> ids = new HashSet<>();
-        String updateDate = batch.getUpdateDate();
-        for (ItemDto item : batch.getItems()) {
+        String updateDate = batchDto.getUpdateDate();
+        for (ItemDto item : batchDto.getItems()) {
             Node node = nodeRepository.findNodeById(item.getId());
             Node newParentNode = nodeRepository.findNodeById(item.getParentId());
             String regex = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$";
