@@ -4,7 +4,7 @@ import com.example.filesystemservice.dto.BatchDto;
 import com.example.filesystemservice.dto.ItemDto;
 import com.example.filesystemservice.dto.NodeDto;
 import com.example.filesystemservice.exception.BadRequestException;
-import com.example.filesystemservice.exception.UnprocessableEntityException;
+import com.example.filesystemservice.exception.NotFoundException;
 import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +75,9 @@ public class NodeService {
 
     public NodeDto getNodeById(String id) {
         Node node = nodeRepository.findNodeById(id);
+        if (node == null) {
+            throw new NotFoundException("Item not found");
+        }
         List<Node> children = nodeRepository.findNodesByParentId(id);
         NodeDto nodeDto = new NodeDto();
         nodeDto.setId(node.getId());

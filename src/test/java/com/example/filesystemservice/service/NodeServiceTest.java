@@ -4,6 +4,7 @@ import com.example.filesystemservice.dto.BatchDto;
 import com.example.filesystemservice.dto.ItemDto;
 import com.example.filesystemservice.dto.NodeDto;
 import com.example.filesystemservice.exception.BadRequestException;
+import com.example.filesystemservice.exception.NotFoundException;
 import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
 import com.google.gson.Gson;
@@ -234,6 +235,13 @@ class NodeServiceTest {
         assertEquals(result.getSize(), nodes.get(2).getSize() + nodes.get(3).getSize() + nodes.get(4).getSize());
         result = nodeService.getNodeById("folderId2");
         assertEquals(result.getSize(), nodes.get(3).getSize() + nodes.get(4).getSize());
+    }
+
+    @Test
+    void getItemNotFound() {
+        assertThrows(NotFoundException.class,
+                () -> nodeService.getNodeById("notExistingId"),
+                "Expected getNodeById() to throw a NotFoundException, but it didn't");
     }
 
     @BeforeEach
