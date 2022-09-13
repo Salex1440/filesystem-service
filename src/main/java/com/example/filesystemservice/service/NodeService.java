@@ -11,6 +11,9 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,16 +31,16 @@ public class NodeService {
         Gson gson = new Gson();
         BatchDto batchDto = gson.fromJson(batch, BatchDto.class);
         Set<String> ids = new HashSet<>();
-        String updateDate = batchDto.getUpdateDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime date;
+        try {
+            date = LocalDateTime.parse(batchDto.getUpdateDate(), formatter);
+        } catch (DateTimeParseException e) {
+            throw new BadRequestException("Validation Failed");
+        }
         for (ItemDto item : batchDto.getItems()) {
             Node node = nodeRepository.findNodeById(item.getId());
             Node newParentNode = nodeRepository.findNodeById(item.getParentId());
-            String regex = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$";
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(updateDate);
-            if (!matcher.matches()) {
-                throw new BadRequestException("Validation Failed");
-            }
             if (ids.contains(item.getId())) {
                 throw new BadRequestException("Validation Failed");
             } else {
@@ -70,17 +73,17 @@ public class NodeService {
                 node.setType(item.getType());
             }
             node.setUrl(item.getUrl());
-            node.setDate(updateDate);
+            node.setDate(date);
             node.setSize(item.getSize());
             node.setParentId(item.getParentId());
             nodeRepository.save(node);
             if (newParentNode != null) {
-                updateDate(newParentNode, updateDate);
+                updateDate(newParentNode, date);
             }
         }
     }
 
-    private void updateDate(Node node, String date) {
+    private void updateDate(Node node, LocalDateTime date) {
         node.setDate(date);
         nodeRepository.save(node);
         Node parentNode = nodeRepository.findNodeById(node.getParentId());
@@ -98,7 +101,8 @@ public class NodeService {
         NodeDto nodeDto = new NodeDto();
         nodeDto.setId(node.getId());
         nodeDto.setType(node.getType());
-        nodeDto.setDate(node.getDate());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        nodeDto.setDate(node.getDate().format(formatter));
         nodeDto.setSize(node.getSize());
         nodeDto.setUrl(node.getUrl());
         nodeDto.setParentId(node.getParentId());

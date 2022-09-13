@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -23,6 +24,6 @@ public class Node {
 
     private String parentId;
 
-    private String date;
+    private LocalDateTime date;
 
 }

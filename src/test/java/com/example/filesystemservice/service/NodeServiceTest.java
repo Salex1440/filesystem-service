@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,7 +55,10 @@ class NodeServiceTest {
         assertEquals(item.getId(), nodeCaptor.getValue().getId());
         assertEquals(item.getType(), nodeCaptor.getValue().getType());
         assertEquals(item.getUrl(), nodeCaptor.getValue().getUrl());
-        assertEquals(updateDate, nodeCaptor.getValue().getDate());
+        LocalDateTime dateTime = nodeCaptor.getValue().getDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        String dateStr = dateTime.format(formatter);
+        assertEquals(updateDate, dateStr);
         assertEquals(item.getSize(), nodeCaptor.getValue().getSize());
         assertEquals(item.getParentId(), nodeCaptor.getValue().getParentId());
         verify(nodeRepositoryMock, times(1)).save(any(Node.class));
@@ -73,7 +78,8 @@ class NodeServiceTest {
         assertEquals(item.getId(), nodeCaptor.getValue().getId());
         assertEquals(item.getType(), nodeCaptor.getValue().getType());
         assertEquals(item.getUrl(), nodeCaptor.getValue().getUrl());
-        assertEquals(updateDate, nodeCaptor.getValue().getDate());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        assertEquals(updateDate, nodeCaptor.getValue().getDate().format(formatter));
         assertEquals(item.getSize(), nodeCaptor.getValue().getSize());
         assertEquals(item.getParentId(), nodeCaptor.getValue().getParentId());
         verify(nodeRepositoryMock, times(1)).save(any(Node.class));
@@ -89,7 +95,9 @@ class NodeServiceTest {
         node.setId(item.getId());
         node.setType(item.getType());
         node.setUrl(item.getUrl());
-        node.setDate(batchFile1.getUpdateDate());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime date = LocalDateTime.parse(batchFile1.getUpdateDate(), formatter);
+        node.setDate(date);
         node.setSize(item.getSize());
         node.setParentId(item.getParentId());
         BatchDto batchFile2 = createBatchData(file2);
@@ -170,7 +178,9 @@ class NodeServiceTest {
         node.setId(item.getId());
         node.setType(item.getType());
         node.setUrl(item.getUrl());
-        node.setDate(batch.getUpdateDate());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime date = LocalDateTime.parse(batch.getUpdateDate(), formatter);
+        node.setDate(date);
         node.setSize(item.getSize());
         node.setParentId(item.getParentId());
         doReturn(node).when(nodeRepositoryMock).findNodeById(node.getId());
@@ -183,19 +193,21 @@ class NodeServiceTest {
         assertEquals(nodeDto.getParentId(), node.getParentId());
         assertEquals(nodeDto.getSize(), node.getSize());
         assertNull(nodeDto.getChildren());
-        assertEquals(nodeDto.getDate(), node.getDate());
+        assertEquals(nodeDto.getDate(), node.getDate().format(formatter));
     }
 
     @Test
     void getFolderNodeById() {
         String filename = "json/batchFolder.json";
         BatchDto batch = createBatchData(filename);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime date = LocalDateTime.parse(batch.getUpdateDate(), formatter);
         ItemDto item = batch.getItems().get(0);
         Node node = new Node();
         node.setId(item.getId());
         node.setType(item.getType());
         node.setUrl(item.getUrl());
-        node.setDate(batch.getUpdateDate());
+        node.setDate(date);
         node.setSize(item.getSize());
         node.setParentId(item.getParentId());
         doReturn(node).when(nodeRepositoryMock).findNodeById(node.getId());
@@ -208,7 +220,7 @@ class NodeServiceTest {
         assertEquals(nodeDto.getParentId(), node.getParentId());
         assertEquals(nodeDto.getSize(), node.getSize());
         assertEquals(nodeDto.getChildren(), new ArrayList<>());
-        assertEquals(nodeDto.getDate(), node.getDate());
+        assertEquals(nodeDto.getDate(), node.getDate().format(formatter));
     }
 
     @Test
@@ -216,12 +228,14 @@ class NodeServiceTest {
         String filename = "json/FolderSize.json";
         BatchDto batch = createBatchData(filename);
         List<Node> nodes = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime date = LocalDateTime.parse(batch.getUpdateDate(), formatter);
         for (ItemDto item : batch.getItems()) {
             Node node = new Node();
             node.setId(item.getId());
             node.setType(item.getType());
             node.setUrl(item.getUrl());
-            node.setDate(batch.getUpdateDate());
+            node.setDate(date);
             node.setSize(item.getSize());
             node.setParentId(item.getParentId());
             nodes.add(node);
@@ -250,12 +264,14 @@ class NodeServiceTest {
         String filename = "json/FolderSize.json";
         BatchDto batch = createBatchData(filename);
         List<Node> nodes = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime date = LocalDateTime.parse(batch.getUpdateDate(), formatter);
         for (ItemDto item : batch.getItems()) {
             Node node = new Node();
             node.setId(item.getId());
             node.setType(item.getType());
             node.setUrl(item.getUrl());
-            node.setDate(batch.getUpdateDate());
+            node.setDate(date);
             node.setSize(item.getSize());
             node.setParentId(item.getParentId());
             nodes.add(node);
