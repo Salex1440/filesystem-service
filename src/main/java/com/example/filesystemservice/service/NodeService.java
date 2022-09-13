@@ -157,6 +157,7 @@ public class NodeService {
             nodeDto.setSize(node.getSize());
             nodeDto.setUrl(node.getUrl());
             nodeDto.setParentId(node.getParentId());
+            nodeDtos.add(nodeDto);
         }
         return nodeDtos;
     }
