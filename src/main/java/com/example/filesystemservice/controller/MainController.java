@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping(path = "/")
 public class MainController {
@@ -30,6 +32,12 @@ public class MainController {
     @ResponseBody
     public NodeDto nodes(@PathVariable String id) {
         return nodeService.getNodeById(id);
+    }
+
+    @GetMapping(path = "updates")
+    @ResponseBody
+    public List<NodeDto> updates(@RequestParam String date){
+        return nodeService.findUpdatedNodes(date);
     }
 
 }

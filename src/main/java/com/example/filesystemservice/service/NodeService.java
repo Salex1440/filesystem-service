@@ -136,7 +136,7 @@ public class NodeService {
         }
     }
 
-    public List<Node> findUpdatedNodes(String dateStr) {
+    public List<NodeDto> findUpdatedNodes(String dateStr) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         LocalDateTime date;
         try {
@@ -144,7 +144,18 @@ public class NodeService {
         } catch (DateTimeParseException e) {
             throw new BadRequestException("Validation Failed");
         }
-        return nodeRepository.findUpdatedNodes(date.minusHours(24), date);
+        List<Node> nodes = nodeRepository.findUpdatedNodes(date.minusHours(24), date);
+        List<NodeDto> nodeDtos = new ArrayList<>();
+        for (Node node : nodes) {
+            NodeDto nodeDto = new NodeDto();
+            nodeDto.setId(node.getId());
+            nodeDto.setType(node.getType());
+            nodeDto.setDate(node.getDate().format(formatter));
+            nodeDto.setSize(node.getSize());
+            nodeDto.setUrl(node.getUrl());
+            nodeDto.setParentId(node.getParentId());
+        }
+        return nodeDtos;
     }
 
 }
