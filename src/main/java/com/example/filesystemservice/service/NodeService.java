@@ -11,13 +11,10 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class NodeService {
@@ -29,11 +26,10 @@ public class NodeService {
         Gson gson = new Gson();
         BatchDto batchDto = gson.fromJson(batch, BatchDto.class);
         Set<String> ids = new HashSet<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        LocalDateTime date;
+        Date date;
         try {
-            date = LocalDateTime.parse(batchDto.getUpdateDate(), formatter);
-        } catch (DateTimeParseException e) {
+            date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(batchDto.getUpdateDate());
+        } catch (ParseException e) {
             throw new BadRequestException("Validation Failed");
         }
         for (ItemDto item : batchDto.getItems()) {
@@ -81,7 +77,7 @@ public class NodeService {
         }
     }
 
-    private void updateDate(Node node, LocalDateTime date) {
+    private void updateDate(Node node, Date date) {
         node.setDate(date);
         nodeRepository.save(node);
         Node parentNode = nodeRepository.findNodeById(node.getParentId());
@@ -99,8 +95,9 @@ public class NodeService {
         NodeDto nodeDto = new NodeDto();
         nodeDto.setId(node.getId());
         nodeDto.setType(node.getType());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        nodeDto.setDate(node.getDate().format(formatter));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        String dateStr = dateFormat.format(node.getDate());
+        nodeDto.setDate(dateStr);
         nodeDto.setSize(node.getSize());
         nodeDto.setUrl(node.getUrl());
         nodeDto.setParentId(node.getParentId());
@@ -138,19 +135,25 @@ public class NodeService {
 
     public List<NodeDto> findUpdatedNodes(String dateStr) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        LocalDateTime date;
+        Date date;
+
         try {
-            date = LocalDateTime.parse(dateStr, formatter);
-        } catch (DateTimeParseException e) {
+            date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(dateStr);
+        } catch (ParseException e) {
             throw new BadRequestException("Validation Failed");
         }
-        List<Node> nodes = nodeRepository.findUpdatedNodes(date.minusHours(24), date);
         List<NodeDto> nodeDtos = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.HOUR_OF_DAY, -24);
+        Date lowDate = calendar.getTime();
+        List<Node> nodes = nodeRepository.findByDateBetween(lowDate, date);
         for (Node node : nodes) {
             NodeDto nodeDto = new NodeDto();
             nodeDto.setId(node.getId());
             nodeDto.setType(node.getType());
-            nodeDto.setDate(node.getDate().format(formatter));
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            nodeDto.setDate(dateFormat.format(node.getDate()));
             nodeDto.setSize(node.getSize());
             nodeDto.setUrl(node.getUrl());
             nodeDto.setParentId(node.getParentId());
