@@ -18,8 +18,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class NodeService {
@@ -136,6 +134,17 @@ public class NodeService {
                 deleteNodeById(child.getId());
             }
         }
+    }
+
+    public List<Node> findUpdatedNodes(String dateStr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime date;
+        try {
+            date = LocalDateTime.parse(dateStr, formatter);
+        } catch (DateTimeParseException e) {
+            throw new BadRequestException("Validation Failed");
+        }
+        return nodeRepository.findUpdatedNodes(date.minusHours(24), date);
     }
 
 }
