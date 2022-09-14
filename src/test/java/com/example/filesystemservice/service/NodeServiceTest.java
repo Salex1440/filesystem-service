@@ -18,8 +18,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +56,11 @@ class NodeServiceTest {
         assertEquals(item.getId(), nodeCaptor.getValue().getId());
         assertEquals(item.getType(), nodeCaptor.getValue().getType());
         assertEquals(item.getUrl(), nodeCaptor.getValue().getUrl());
-        assertEquals(updateDate, nodeCaptor.getValue().getDate());
+        Date date = nodeCaptor.getValue().getDate();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        String dateStr = dateFormat.format(date);
+        assertEquals(updateDate, dateStr);
+
         assertEquals(item.getSize(), nodeCaptor.getValue().getSize());
         assertEquals(item.getParentId(), nodeCaptor.getValue().getParentId());
         verify(nodeRepositoryMock, times(1)).save(any(Node.class));
@@ -73,14 +80,17 @@ class NodeServiceTest {
         assertEquals(item.getId(), nodeCaptor.getValue().getId());
         assertEquals(item.getType(), nodeCaptor.getValue().getType());
         assertEquals(item.getUrl(), nodeCaptor.getValue().getUrl());
-        assertEquals(updateDate, nodeCaptor.getValue().getDate());
+        Date date = nodeCaptor.getValue().getDate();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        String dateStr = dateFormat.format(date);
+        assertEquals(updateDate, dateStr);
         assertEquals(item.getSize(), nodeCaptor.getValue().getSize());
         assertEquals(item.getParentId(), nodeCaptor.getValue().getParentId());
         verify(nodeRepositoryMock, times(1)).save(any(Node.class));
     }
 
     @Test
-    void badParent() {
+    void badParent() throws ParseException {
         String file1 = "json/batchFile.json";
         String file2 = "json/BadParent.json";
         BatchDto batchFile1 = createBatchData(file1);
@@ -89,7 +99,9 @@ class NodeServiceTest {
         node.setId(item.getId());
         node.setType(item.getType());
         node.setUrl(item.getUrl());
-        node.setDate(batchFile1.getUpdateDate());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date date = dateFormat.parse(batchFile1.getUpdateDate());
+        node.setDate(date);
         node.setSize(item.getSize());
         node.setParentId(item.getParentId());
         BatchDto batchFile2 = createBatchData(file2);
@@ -162,7 +174,7 @@ class NodeServiceTest {
     }
 
     @Test
-    void getFileNodeById() {
+    void getFileNodeById() throws ParseException {
         String filename = "json/batchFile.json";
         BatchDto batch = createBatchData(filename);
         ItemDto item = batch.getItems().get(0);
@@ -170,7 +182,9 @@ class NodeServiceTest {
         node.setId(item.getId());
         node.setType(item.getType());
         node.setUrl(item.getUrl());
-        node.setDate(batch.getUpdateDate());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date date = dateFormat.parse(batch.getUpdateDate());
+        node.setDate(date);
         node.setSize(item.getSize());
         node.setParentId(item.getParentId());
         doReturn(node).when(nodeRepositoryMock).findNodeById(node.getId());
@@ -183,19 +197,22 @@ class NodeServiceTest {
         assertEquals(nodeDto.getParentId(), node.getParentId());
         assertEquals(nodeDto.getSize(), node.getSize());
         assertNull(nodeDto.getChildren());
-        assertEquals(nodeDto.getDate(), node.getDate());
+        String dateStr = dateFormat.format(node.getDate());
+        assertEquals(nodeDto.getDate(), dateStr);
     }
 
     @Test
-    void getFolderNodeById() {
+    void getFolderNodeById() throws ParseException {
         String filename = "json/batchFolder.json";
         BatchDto batch = createBatchData(filename);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date date = dateFormat.parse(batch.getUpdateDate());
         ItemDto item = batch.getItems().get(0);
         Node node = new Node();
         node.setId(item.getId());
         node.setType(item.getType());
         node.setUrl(item.getUrl());
-        node.setDate(batch.getUpdateDate());
+        node.setDate(date);
         node.setSize(item.getSize());
         node.setParentId(item.getParentId());
         doReturn(node).when(nodeRepositoryMock).findNodeById(node.getId());
@@ -208,20 +225,23 @@ class NodeServiceTest {
         assertEquals(nodeDto.getParentId(), node.getParentId());
         assertEquals(nodeDto.getSize(), node.getSize());
         assertEquals(nodeDto.getChildren(), new ArrayList<>());
-        assertEquals(nodeDto.getDate(), node.getDate());
+        String dateStr = dateFormat.format(node.getDate());
+        assertEquals(nodeDto.getDate(), dateStr);
     }
 
     @Test
-    void checkFolderSize() {
+    void checkFolderSize() throws ParseException {
         String filename = "json/FolderSize.json";
         BatchDto batch = createBatchData(filename);
         List<Node> nodes = new ArrayList<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date date = dateFormat.parse(batch.getUpdateDate());
         for (ItemDto item : batch.getItems()) {
             Node node = new Node();
             node.setId(item.getId());
             node.setType(item.getType());
             node.setUrl(item.getUrl());
-            node.setDate(batch.getUpdateDate());
+            node.setDate(date);
             node.setSize(item.getSize());
             node.setParentId(item.getParentId());
             nodes.add(node);
@@ -246,16 +266,18 @@ class NodeServiceTest {
     }
 
     @Test
-    void deleteNodeById() {
+    void deleteNodeById() throws ParseException {
         String filename = "json/FolderSize.json";
         BatchDto batch = createBatchData(filename);
         List<Node> nodes = new ArrayList<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date date = dateFormat.parse(batch.getUpdateDate());
         for (ItemDto item : batch.getItems()) {
             Node node = new Node();
             node.setId(item.getId());
             node.setType(item.getType());
             node.setUrl(item.getUrl());
-            node.setDate(batch.getUpdateDate());
+            node.setDate(date);
             node.setSize(item.getSize());
             node.setParentId(item.getParentId());
             nodes.add(node);
@@ -280,6 +302,13 @@ class NodeServiceTest {
         assertThrows(NotFoundException.class,
                 () -> nodeService.deleteNodeById("notExistingId"),
                 "Expected getNodeById() to throw a NotFoundException, but it didn't");
+    }
+
+    @Test
+    void updatedBadDateFormat() {
+        assertThrows(BadRequestException.class,
+                () -> nodeService.findUpdatedNodes("2022-02-01t12:00:00Z"),
+                "Expected findUpdateNodes() to throw a BadRequestException, but it didn't!");
     }
 
 

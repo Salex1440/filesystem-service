@@ -11,12 +11,10 @@ import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class NodeService {
@@ -28,16 +26,15 @@ public class NodeService {
         Gson gson = new Gson();
         BatchDto batchDto = gson.fromJson(batch, BatchDto.class);
         Set<String> ids = new HashSet<>();
-        String updateDate = batchDto.getUpdateDate();
+        Date date;
+        try {
+            date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(batchDto.getUpdateDate());
+        } catch (ParseException e) {
+            throw new BadRequestException("Validation Failed");
+        }
         for (ItemDto item : batchDto.getItems()) {
             Node node = nodeRepository.findNodeById(item.getId());
             Node newParentNode = nodeRepository.findNodeById(item.getParentId());
-            String regex = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$";
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(updateDate);
-            if (!matcher.matches()) {
-                throw new BadRequestException("Validation Failed");
-            }
             if (ids.contains(item.getId())) {
                 throw new BadRequestException("Validation Failed");
             } else {
@@ -70,17 +67,17 @@ public class NodeService {
                 node.setType(item.getType());
             }
             node.setUrl(item.getUrl());
-            node.setDate(updateDate);
+            node.setDate(date);
             node.setSize(item.getSize());
             node.setParentId(item.getParentId());
             nodeRepository.save(node);
             if (newParentNode != null) {
-                updateDate(newParentNode, updateDate);
+                updateDate(newParentNode, date);
             }
         }
     }
 
-    private void updateDate(Node node, String date) {
+    private void updateDate(Node node, Date date) {
         node.setDate(date);
         nodeRepository.save(node);
         Node parentNode = nodeRepository.findNodeById(node.getParentId());
@@ -98,7 +95,9 @@ public class NodeService {
         NodeDto nodeDto = new NodeDto();
         nodeDto.setId(node.getId());
         nodeDto.setType(node.getType());
-        nodeDto.setDate(node.getDate());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        String dateStr = dateFormat.format(node.getDate());
+        nodeDto.setDate(dateStr);
         nodeDto.setSize(node.getSize());
         nodeDto.setUrl(node.getUrl());
         nodeDto.setParentId(node.getParentId());
@@ -132,6 +131,35 @@ public class NodeService {
                 deleteNodeById(child.getId());
             }
         }
+    }
+
+    public List<NodeDto> findUpdatedNodes(String dateStr) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date date;
+
+        try {
+            date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(dateStr);
+        } catch (ParseException e) {
+            throw new BadRequestException("Validation Failed");
+        }
+        List<NodeDto> nodeDtos = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.HOUR_OF_DAY, -24);
+        Date lowDate = calendar.getTime();
+        List<Node> nodes = nodeRepository.findByDateBetween(lowDate, date);
+        for (Node node : nodes) {
+            NodeDto nodeDto = new NodeDto();
+            nodeDto.setId(node.getId());
+            nodeDto.setType(node.getType());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            nodeDto.setDate(dateFormat.format(node.getDate()));
+            nodeDto.setSize(node.getSize());
+            nodeDto.setUrl(node.getUrl());
+            nodeDto.setParentId(node.getParentId());
+            nodeDtos.add(nodeDto);
+        }
+        return nodeDtos;
     }
 
 }
