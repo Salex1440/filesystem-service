@@ -304,6 +304,13 @@ class NodeServiceTest {
                 "Expected getNodeById() to throw a NotFoundException, but it didn't");
     }
 
+    @Test
+    void updatedBadDateFormat() {
+        assertThrows(BadRequestException.class,
+                () -> nodeService.findUpdatedNodes("2022-02-01t12:00:00Z"),
+                "Expected findUpdateNodes() to throw a BadRequestException, but it didn't!");
+    }
+
 
     @BeforeEach
     void initMocks() {
