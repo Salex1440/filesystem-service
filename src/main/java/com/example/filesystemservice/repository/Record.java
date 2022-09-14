@@ -16,8 +16,16 @@ public class Record {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    String nodeId;
+    private String nodeId;
 
-    Date updateDate;
+    private String nodeParentId;
+
+    private String url;
+
+    private Date updateDate;
+
+    private int size;
+
+    private String type;
 
 }
