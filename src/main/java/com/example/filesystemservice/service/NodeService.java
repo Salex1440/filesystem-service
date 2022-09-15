@@ -133,6 +133,10 @@ public class NodeService {
         }
         List<Node> children = nodeRepository.findNodesByParentId(id);
         nodeRepository.delete(node);
+        List<Record> records = recordRepository.findByNodeId(node.getId());
+        for (Record record : records) {
+            recordRepository.delete(record);
+        }
         if (children != null) {
             for (Node child : children) {
                 deleteNodeById(child.getId());
