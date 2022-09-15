@@ -1,12 +1,12 @@
 package com.example.filesystemservice.service;
 
-import com.example.filesystemservice.dto.BatchDto;
-import com.example.filesystemservice.dto.ItemDto;
-import com.example.filesystemservice.dto.NodeDto;
+import com.example.filesystemservice.dto.*;
 import com.example.filesystemservice.exception.BadRequestException;
 import com.example.filesystemservice.exception.NotFoundException;
 import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
+import com.example.filesystemservice.repository.Record;
+import com.example.filesystemservice.repository.RecordRepository;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +21,9 @@ public class NodeService {
 
     @Autowired
     private NodeRepository nodeRepository;
+
+    @Autowired
+    private RecordRepository recordRepository;
 
     public void importBatch(String batch) {
         Gson gson = new Gson();
@@ -134,7 +137,6 @@ public class NodeService {
     }
 
     public List<NodeDto> findUpdatedNodes(String dateStr) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         Date date;
 
         try {
@@ -160,6 +162,33 @@ public class NodeService {
             nodeDtos.add(nodeDto);
         }
         return nodeDtos;
+    }
+
+    public HistoryDto getHistory(String id, String from, String to) {
+        HistoryDto historyDto = new HistoryDto();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        Date dateFrom, dateTo;
+        try {
+            dateFrom = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(from);
+            dateTo = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(to);
+        } catch (ParseException e) {
+            throw new BadRequestException("Validation Failed");
+        }
+        List<Record> records = recordRepository.findByNodeIdBetweenDate(id, dateFrom, dateTo);
+        List<RecordDto> recordDtoList = new ArrayList<>();
+        for (Record record : records) {
+            RecordDto recordDto = new RecordDto();
+            recordDto.setId(record.getNodeId());
+            recordDto.setParentId(recordDto.getParentId());
+            recordDto.setUrl(record.getUrl());
+            recordDto.setType(record.getType());
+            recordDto.setSize(record.getSize());
+            String dateStr = dateFormat.format(record.getUpdateDate());
+            recordDto.setDate(dateStr);
+            recordDtoList.add(recordDto);
+        }
+        historyDto.setItems(recordDtoList);
+        return historyDto;
     }
 
 }
