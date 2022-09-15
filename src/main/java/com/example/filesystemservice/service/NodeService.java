@@ -74,6 +74,8 @@ public class NodeService {
             node.setSize(item.getSize());
             node.setParentId(item.getParentId());
             nodeRepository.save(node);
+            Record record = new Record(node);
+            recordRepository.save(record);
             if (newParentNode != null) {
                 updateDate(newParentNode, date);
             }
@@ -83,6 +85,8 @@ public class NodeService {
     private void updateDate(Node node, Date date) {
         node.setDate(date);
         nodeRepository.save(node);
+        Record record = new Record(node);
+        recordRepository.save(record);
         Node parentNode = nodeRepository.findNodeById(node.getParentId());
         if (parentNode != null) {
             updateDate(parentNode, date);
