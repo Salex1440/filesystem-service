@@ -9,10 +9,9 @@ import java.util.List;
 
 public interface RecordRepository extends CrudRepository<Record, Integer> {
 
-    @Query("SELECT r FROM Record r WHERE r.nodeId= :nodeId AND r.updateDate >= :from AND r.updateDate < ^to")
+    @Query("SELECT r FROM Record r WHERE r.nodeId= :nodeId AND r.updateDate >= :from AND r.updateDate < :to")
     List<Record> findByNodeIdBetweenDate(@NonNull String nodeId, Date from, Date to);
 
     List<Record> findByNodeId(@NonNull String nodeId);
-
 
 }
