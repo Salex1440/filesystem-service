@@ -176,6 +176,9 @@ public class NodeService {
         }
         List<Record> records = recordRepository.findByNodeIdBetweenDate(id, dateFrom, dateTo);
         List<RecordDto> recordDtoList = new ArrayList<>();
+        if (records == null) {
+            throw new NotFoundException("Item not found");
+        }
         for (Record record : records) {
             RecordDto recordDto = new RecordDto();
             recordDto.setId(record.getNodeId());
