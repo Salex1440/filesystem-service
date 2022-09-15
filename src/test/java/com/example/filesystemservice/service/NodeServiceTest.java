@@ -7,6 +7,8 @@ import com.example.filesystemservice.exception.BadRequestException;
 import com.example.filesystemservice.exception.NotFoundException;
 import com.example.filesystemservice.repository.Node;
 import com.example.filesystemservice.repository.NodeRepository;
+import com.example.filesystemservice.repository.Record;
+import com.example.filesystemservice.repository.RecordRepository;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +35,9 @@ class NodeServiceTest {
 
     @Mock
     NodeRepository nodeRepositoryMock;
+
+    @Mock
+    RecordRepository recordRepositoryMock;
 
     @InjectMocks
     NodeService nodeService;
@@ -309,6 +314,31 @@ class NodeServiceTest {
         assertThrows(BadRequestException.class,
                 () -> nodeService.findUpdatedNodes("2022-02-01t12:00:00Z"),
                 "Expected findUpdateNodes() to throw a BadRequestException, but it didn't!");
+    }
+
+    @Test
+    void historyNotFound() {
+        doReturn(null).when(recordRepositoryMock).findByNodeIdBetweenDate(anyString(), any(Date.class), any(Date.class));
+        assertThrows(NotFoundException.class,
+                () -> nodeService.getHistory("notExistingId", "2022-02-01T12:00:00Z", "2022-02-01T12:00:00Z"),
+                "Expected getNodeById() to throw a NotFoundException, but it didn't");
+    }
+
+    @Test
+    void historyBadRequest() throws ParseException {
+        Record record = new Record();
+        record.setNodeId("id");
+        record.setNodeParentId("parentId");
+        record.setSize(12);
+        record.setType("FILE");
+        record.setUrl("/");
+        Date date = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse("2022-02-01T12:00:00Z");
+        record.setUpdateDate(date);
+        List<Record> records = List.of(record);
+        doReturn(records).when(recordRepositoryMock).findByNodeIdBetweenDate(anyString(), any(Date.class), any(Date.class));
+        assertThrows(BadRequestException.class,
+                () -> nodeService.getHistory("notExistingId", "2022-02-01T12:00:00z", "2022-02-01T12:00:00Z"),
+                "Expected getNodeById() to throw a BadRequestException, but it didn't");
     }
 
 

@@ -1,0 +1,13 @@
+package com.example.filesystemservice.dto;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
+@Getter
+@Setter
+public class HistoryDto {
+
+    private List<RecordDto> items;
+}

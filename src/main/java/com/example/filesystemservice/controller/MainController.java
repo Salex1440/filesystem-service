@@ -1,5 +1,6 @@
 package com.example.filesystemservice.controller;
 
+import com.example.filesystemservice.dto.HistoryDto;
 import com.example.filesystemservice.dto.NodeDto;
 import com.example.filesystemservice.service.NodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,14 @@ public class MainController {
     @ResponseBody
     public List<NodeDto> updates(@RequestParam String date){
         return nodeService.findUpdatedNodes(date);
+    }
+
+    @GetMapping(path = "node/{id}/history")
+    @ResponseBody
+    public HistoryDto getHistoryNode(@PathVariable String id,
+                                     @RequestParam String dateStart,
+                                     @RequestParam String dateEnd) {
+        return nodeService.getHistory(id, dateStart, dateEnd);
     }
 
 }
