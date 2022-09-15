@@ -174,7 +174,7 @@ public class NodeService {
 
     public HistoryDto getHistory(String id, String from, String to) {
         HistoryDto historyDto = new HistoryDto();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("$yyyy-MM-dd'T'HH:mm:ss'Z'");
         Date dateFrom, dateTo;
         try {
             dateFrom = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(from);
